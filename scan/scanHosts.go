@@ -44,9 +44,9 @@ func scanPort(host string, port int) PortState {
 
 // Results represent the scan results for a single host
 type Results struct {
-	Host      string
-	NotFound  bool
-	PortState []PortState
+	Host       string
+	NotFound   bool
+	PortStates []PortState
 }
 
 // Run performs a port scan on the hosts list
@@ -65,7 +65,7 @@ func Run(hl *HostList, ports []int) []Results {
 		}
 
 		for _, p := range ports {
-			r.PortState = append(r.PortState, scanPort(h, p))
+			r.PortStates = append(r.PortStates, scanPort(h, p))
 		}
 
 		res = append(res, r)
