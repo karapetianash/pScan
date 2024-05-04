@@ -20,7 +20,7 @@ After that you can run the program using the cmd.\
 Example of adding a new host to list:
 
 ```
-$ .\pScan.exe hosts add 168.168.0.192"
+$ ./pScan.exe hosts add 168.168.0.192"
 ```
 
 ### Options
