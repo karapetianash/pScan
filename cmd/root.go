@@ -42,7 +42,7 @@ on a list of hosts.
 pScan allows you to add, list, and delete hosts from the list.
 pScan executes a port scan on specified TCP ports. You can customize the
 target ports using a command line flag.`,
-	Version: "0.1",
+	Version: "1.0",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
