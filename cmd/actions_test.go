@@ -153,13 +153,13 @@ func TestIntegration(t *testing.T) {
 		t.Fatalf("Expected no error, got %q\n", err)
 	}
 
-	// Scan hosts
-	if err := scanAction(&out, tf, nil); err != nil {
+	// List hosts after delete
+	if err := listAction(&out, tf, nil); err != nil {
 		t.Fatalf("Expected no error, got %q\n", err)
 	}
 
-	// List hosts after delete
-	if err := listAction(&out, tf, nil); err != nil {
+	// Scan hosts
+	if err := scanAction(&out, tf, nil); err != nil {
 		t.Fatalf("Expected no error, got %q\n", err)
 	}
 
@@ -168,6 +168,9 @@ func TestIntegration(t *testing.T) {
 		t.Errorf("Expected output %q, got %q\n", expectedOut, out.String())
 	}
 }
+
+// Added host: host1\nAdded host: host2\nAdded host: host3\nhost1\nhost2\nhost3\nDeleted host: host2\nhost1\nhost3\nhost1: Host not found\n\nhost3: Host not found\n\n
+// Added host: host1\nAdded host: host2\nAdded host: host3\nhost1\nhost2\nhost3\nDeleted host: host2\n				host1: Host not found\n\nhost3: Host not found\n\nhost1\nhost3\n
 
 func TestScanAction(t *testing.T) {
 	// Define hosts for scan test
