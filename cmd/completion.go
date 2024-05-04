@@ -45,10 +45,8 @@ source <(pScan completion)
 }
 
 func completionAction(out io.Writer) error {
-	// For Bash:
-	// return rootCmd.GenBashCompletion(out)
-
-	return rootCmd.GenPowerShellCompletion(out)
+	// For Bash only
+	return rootCmd.GenBashCompletion(out)
 }
 
 func init() {
