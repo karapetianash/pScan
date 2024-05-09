@@ -5,8 +5,9 @@ on a list of hosts.
 pScan allows you to add, list, and delete hosts from the list.
 pScan executes a port scan on specified TCP ports. You can customize the
 target ports using a command line flag.
+The utility also supports autocompletion.
 
-Full documentation is also available [here](docs/pScan.md)
+Full documentation is also available [here](docs/pScan.md).
 
 ## Usage
 To build the app, run the following command in the root folder:
