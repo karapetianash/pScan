@@ -58,16 +58,33 @@ var scanCmd = &cobra.Command{
 			return err
 		}
 
+		open, err := cmd.Flags().GetBool("open")
+		if err != nil {
+			return err
+		}
+
+		closed, err := cmd.Flags().GetBool("closed")
+		if err != nil {
+			return err
+		}
+
+		listOnly := 2
+		if open && !closed {
+			listOnly = 0
+		} else if !open && closed {
+			listOnly = 1
+		}
+
 		ports, err := parsePorts(strPorts)
 		if err != nil {
 			return fmt.Errorf("invalid port value: %q", err)
 		}
 
-		return scanAction(os.Stdout, hostsFile, ports, timeout)
+		return scanAction(os.Stdout, hostsFile, ports, timeout, listOnly)
 	},
 }
 
-func scanAction(out io.Writer, hostsFile string, ports []int, timeout int) error {
+func scanAction(out io.Writer, hostsFile string, ports []int, timeout, listOnly int) error {
 	hl := &scan.HostList{}
 
 	if err := hl.Load(hostsFile); err != nil {
@@ -76,10 +93,10 @@ func scanAction(out io.Writer, hostsFile string, ports []int, timeout int) error
 
 	results := scan.Run(hl, ports, timeout)
 
-	return printResults(out, results)
+	return printResults(out, results, listOnly)
 }
 
-func printResults(out io.Writer, results []scan.Results) error {
+func printResults(out io.Writer, results []scan.Results, listOnly int) error {
 	message := ""
 
 	for _, r := range results {
@@ -92,8 +109,20 @@ func printResults(out io.Writer, results []scan.Results) error {
 
 		message += fmt.Sprintln()
 
+		// TODO: add message about no relevant ports
 		for _, p := range r.PortStates {
-			message += fmt.Sprintf("\t%d: %s\n", p.Port, p.Open)
+			switch listOnly {
+			case 0:
+				if p.Open {
+					message += fmt.Sprintf("\t%d: %s\n", p.Port, p.Open)
+				}
+			case 1:
+				if !p.Open {
+					message += fmt.Sprintf("\t%d: %s\n", p.Port, p.Open)
+				}
+			default:
+				message += fmt.Sprintf("\t%d: %s\n", p.Port, p.Open)
+			}
 		}
 
 		message += fmt.Sprintln()
@@ -196,4 +225,6 @@ func init() {
 
 	scanCmd.Flags().StringP("ports", "p", "22 80-82 443", "ports or ports ranges to scan (separated with commas or spaces)")
 	scanCmd.Flags().IntP("timeout", "t", 1, "scan duration")
+	scanCmd.Flags().BoolP("open", "o", false, "list open ports")
+	scanCmd.Flags().BoolP("closed", "c", false, "list closed ports")
 }
