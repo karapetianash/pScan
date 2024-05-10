@@ -2,10 +2,12 @@ package cmd
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"net"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"testing"
@@ -229,5 +231,89 @@ func TestScanAction(t *testing.T) {
 	// Test scan output
 	if out.String() != expectedOut {
 		t.Errorf("Expected output %q, got %q\n", expectedOut, out.String())
+	}
+}
+
+func TestParsePorts(t *testing.T) {
+	testCases := []struct {
+		name          string
+		strPorts      string
+		expectedError error
+		expectedValue []int
+	}{
+		{"ValidCommaString", "1, 5, 7-10, 15", nil, []int{1, 5, 7, 8, 9, 10, 15}},
+		{"ValidSpaceString", "1 5 7-10 15", nil, []int{1, 5, 7, 8, 9, 10, 15}},
+		{"ValidMixString", "1, 5 7-10, 15", nil, []int{1, 5, 7, 8, 9, 10, 15}},
+		{"NoValidTCPValueString", "1, 5, 7-10, 15, 1000000", ErrInvalidTCPPortValue, nil},
+		{"NoValidRangeString", "1, 5, 7-6, 15", ErrInvalidPortRange, nil},
+		{"NoValidNoValueString", "some text", ErrInvalidTCPPortValue, nil},
+		{"NoValidEmptyString", "", ErrInvalidTCPPortValue, nil},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res, err := parsePorts(tc.strPorts)
+
+			if tc.expectedError != nil {
+				if err == nil {
+					t.Fatalf("Expected error, got 'nil' instead\n")
+				}
+
+				if !errors.Is(err, tc.expectedError) {
+					t.Errorf("Expected error %q, got %q instead\n", tc.expectedError, err)
+				}
+
+				return
+			}
+
+			if err != nil {
+				t.Fatalf("Expected no error, got %q instead\n", err)
+			}
+
+			if !reflect.DeepEqual(res, tc.expectedValue) {
+				t.Errorf("Expected ports %v, got %v instead\n", tc.expectedValue, res)
+			}
+		})
+	}
+}
+
+func TestIsValid(t *testing.T) {
+	testCases := []struct {
+		name        string
+		value       int
+		expectedRes bool
+	}{
+		{"Valid", 4, true},
+		{"NoValid", 0, false},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.expectedRes != isValid(tc.value) {
+				t.Errorf("Expected %t, got %t instead\n", tc.expectedRes, isValid(tc.value))
+			}
+		})
+	}
+}
+
+func TestExist(t *testing.T) {
+	testCases := []struct {
+		name        string
+		port        int
+		pSlice      []int
+		expectedRes bool
+	}{
+		{"Exists", 1, []int{1, 2, 3}, true},
+		{"Exists", 4, []int{1, 2, 3}, false},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			res := exist(tc.port, tc.pSlice)
+
+			if tc.expectedRes != res {
+				t.Errorf("Expected %t, got %t instead\n", tc.expectedRes, res)
+			}
+		})
 	}
 }

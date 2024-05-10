@@ -41,7 +41,7 @@ func TestRunHostFound(t *testing.T) {
 	host := "localhost"
 	hl := &scan.HostList{}
 
-	_ = hl.Add(host)
+	hl.Add(host)
 
 	ports := make([]int, 0)
 
@@ -68,7 +68,7 @@ func TestRunHostFound(t *testing.T) {
 		ports = append(ports, port)
 
 		if tc.name == "ClosedPort" {
-			_ = ln.Close()
+			ln.Close()
 		}
 	}
 
@@ -106,7 +106,7 @@ func TestHostNotFound(t *testing.T) {
 	host := "389.389.389.389"
 	hl := &scan.HostList{}
 
-	_ = hl.Add(host)
+	hl.Add(host)
 
 	res := scan.Run(hl, []int{})
 
