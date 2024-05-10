@@ -48,6 +48,11 @@ var scanCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		hostsFile := viper.GetString("hosts-file")
 
+		timeout, err := cmd.Flags().GetInt("timeout")
+		if err != nil {
+			return err
+		}
+
 		strPorts, err := cmd.Flags().GetString("ports")
 		if err != nil {
 			return err
@@ -58,18 +63,18 @@ var scanCmd = &cobra.Command{
 			return fmt.Errorf("invalid port value: %q", err)
 		}
 
-		return scanAction(os.Stdout, hostsFile, ports)
+		return scanAction(os.Stdout, hostsFile, ports, timeout)
 	},
 }
 
-func scanAction(out io.Writer, hostsFile string, ports []int) error {
+func scanAction(out io.Writer, hostsFile string, ports []int, timeout int) error {
 	hl := &scan.HostList{}
 
 	if err := hl.Load(hostsFile); err != nil {
 		return err
 	}
 
-	results := scan.Run(hl, ports)
+	results := scan.Run(hl, ports, timeout)
 
 	return printResults(out, results)
 }
@@ -190,4 +195,5 @@ func init() {
 	rootCmd.AddCommand(scanCmd)
 
 	scanCmd.Flags().StringP("ports", "p", "22 80-82 443", "ports or ports ranges to scan (separated with commas or spaces)")
+	scanCmd.Flags().IntP("timeout", "t", 1, "scan duration")
 }

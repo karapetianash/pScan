@@ -161,7 +161,7 @@ func TestIntegration(t *testing.T) {
 	}
 
 	// Scan hosts
-	if err := scanAction(&out, tf, nil); err != nil {
+	if err := scanAction(&out, tf, nil, 1); err != nil {
 		t.Fatalf("Expected no error, got %q\n", err)
 	}
 
@@ -224,7 +224,7 @@ func TestScanAction(t *testing.T) {
 	var out bytes.Buffer
 
 	// Execute scan and capture output
-	if err := scanAction(&out, tf, ports); err != nil {
+	if err := scanAction(&out, tf, ports, 1); err != nil {
 		t.Fatalf("Expected no error, got %q\n", err)
 	}
 
