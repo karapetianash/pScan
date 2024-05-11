@@ -109,8 +109,15 @@ func printResults(out io.Writer, results []scan.Results, listOnly int) error {
 
 		message += fmt.Sprintln()
 
-		// TODO: add message about no relevant ports
+		var openCnt, closedCnt int
+
 		for _, p := range r.PortStates {
+			if p.Open {
+				openCnt++
+			} else {
+				closedCnt++
+			}
+
 			switch listOnly {
 			case 0:
 				if p.Open {
@@ -123,6 +130,24 @@ func printResults(out io.Writer, results []scan.Results, listOnly int) error {
 			default:
 				message += fmt.Sprintf("\t%d: %s\n", p.Port, p.Open)
 			}
+		}
+
+		switch listOnly {
+		case 0:
+			if openCnt != 0 {
+				message += fmt.Sprintf("\t-----\n")
+			}
+			message += fmt.Sprintf("\tNumber of relevant open ports: %d\n", openCnt)
+		case 1:
+			if closedCnt != 0 {
+				message += fmt.Sprintf("\t-----\n")
+			}
+			message += fmt.Sprintf("\tNumber of relevant closed ports: %d\n", closedCnt)
+		default:
+			message += fmt.Sprintf("\t-----\n")
+			message += fmt.Sprintf("\tNumber of relevant ports: %d\n", openCnt+closedCnt)
+			message += fmt.Sprintf("\tOpen: %d\n", openCnt)
+			message += fmt.Sprintf("\tClosed: %d\n", closedCnt)
 		}
 
 		message += fmt.Sprintln()
