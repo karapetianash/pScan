@@ -24,6 +24,7 @@ func (s state) String() string {
 	return "closed"
 }
 
+// TODO: allow to execute UDP port scans in addition to TCP
 // scanPort performs a port scan on a single TCP port
 func scanPort(host string, port, timeout int) PortState {
 	p := PortState{
