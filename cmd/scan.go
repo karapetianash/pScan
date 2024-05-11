@@ -249,7 +249,7 @@ func init() {
 	rootCmd.AddCommand(scanCmd)
 
 	scanCmd.Flags().StringP("ports", "p", "22 80-82 443", "ports or ports ranges to scan (separated with commas or spaces)")
-	scanCmd.Flags().IntP("timeout", "t", 1, "scan duration")
+	scanCmd.Flags().IntP("timeout", "t", 1, "scan duration (sec)")
 	scanCmd.Flags().BoolP("open", "o", false, "list open ports")
 	scanCmd.Flags().BoolP("closed", "c", false, "list closed ports")
 }
